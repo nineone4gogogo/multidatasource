@@ -3,14 +3,10 @@ package com.aswald.common.config;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
-import com.aswald.common.config.DataSourceContext;
-import com.aswald.common.config.DataSourceProperties;
 import com.aswald.common.datasource.DynamicDataSource;
-import com.aswald.common.datasource.DynamicDataSourceContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -24,7 +20,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 @Configuration
@@ -43,6 +38,7 @@ public class DataSourceConfig {
         }
         dataSourceMap = getDataSourceMap(dataSourceProperties);
         dynamicDataSource.setTargetDataSources(dataSourceMap);
+        dynamicDataSource.setDefaultTargetDataSource(dataSourceMap.get("default"));
         dynamicDataSource.afterPropertiesSet();
         return dynamicDataSource;
     }
@@ -52,17 +48,14 @@ public class DataSourceConfig {
         if (dataSourceProperties != null && dataSourceProperties.getDriver().size() > 0) {
             Map<String, DataSourceContext> datasource = dataSourceProperties.getDriver();
             DruidContext druidContext = dataSourceProperties.getDruid();
-            DbNames[] dbNames = DbNames.values();
-            for (DbNames dbName : dbNames) {
-                String key = dbName.name().toLowerCase();
-                DataSourceContext dataSourceContext = datasource.get(key);
+            datasource.forEach((k, v) -> {
+                DataSourceContext dataSourceContext = datasource.get(k);
                 if (dataSourceContext != null) {
                     DataSource dataSource = getDataSource(dataSourceContext, druidContext);
-                    datasourceMap.put(dbName, dataSource);
+                    datasourceMap.put(k, dataSource);
                 }
-            }
+            });
         }
-        DynamicDataSourceContextHolder.addDataSourceKeys(datasourceMap.keySet());
         return datasourceMap;
     }
 

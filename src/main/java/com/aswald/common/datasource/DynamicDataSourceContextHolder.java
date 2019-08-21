@@ -13,19 +13,13 @@ import java.util.List;
 
 public class DynamicDataSourceContextHolder {
 
-    private static final ThreadLocal<DbNames> contextHolder=new ThreadLocal<>();
-
-
-    /**
-     * 数据源的 key集合，用于切换时判断数据源是否存在
-     */
-    public static List<DbNames> dataSourceKeys = new ArrayList<>();
+    private static final ThreadLocal<String> contextHolder=new ThreadLocal<>();
 
     /**
      * 切换数据源
      * @param key
      */
-    public static void setDataSource(DbNames key) {
+    public static void setDataSource(String key) {
         contextHolder.set(key);
     }
 
@@ -33,7 +27,7 @@ public class DynamicDataSourceContextHolder {
      * 获取数据源
      * @return
      */
-    public static DbNames getDataSource() {
+    public static String getDataSource() {
         return contextHolder.get();
     }
 
@@ -44,21 +38,4 @@ public class DynamicDataSourceContextHolder {
         contextHolder.remove();
     }
 
-    /**
-     * 判断是否包含数据源
-     * @param key
-     * @return
-     */
-    public static boolean existDataSource(DbNames key) {
-        return dataSourceKeys.contains(key);
-    }
-
-    /**
-     * 添加数据源keys
-     * @param keys
-     * @return
-     */
-    public static boolean addDataSourceKeys(Collection<? extends Object> keys) {
-        return dataSourceKeys.addAll((Collection<? extends DbNames>) keys);
-    }
 }

@@ -15,12 +15,13 @@ import java.util.List;
  * @Description
  **/
 @Mapper
+@DataSource(DbNames.FINANCIAL)
 public interface SysUserMapper {
     /**
      * 查询全部用户
      *
      * @return
      */
-    @DataSource(DbNames.MAIN)
+//    @DataSource(DbNames.FINANCIAL)
     List<SysUser> selectAll();
 }

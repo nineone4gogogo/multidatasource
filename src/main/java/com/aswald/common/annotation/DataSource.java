@@ -17,6 +17,6 @@ public @interface DataSource {
      * 数据源key值
      * @return
      */
-    DbNames value() default DbNames.MAIN;
+    DbNames value();
     
 }
